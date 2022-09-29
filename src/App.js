@@ -1,23 +1,17 @@
-import logo from './logo.svg';
-import './App.css';
+import RoomList from "./routes/RoomList";
+import { Routes, Route } from "react-router-dom";
+import ReservationRoom from "./routes/ReservationRoom";
+import { RoomProvider } from "./context/RoomContex";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <RoomProvider>
+        <Routes>
+          <Route path="/" element={<RoomList />}></Route>
+          <Route path="/reserva" element={<ReservationRoom />} />
+        </Routes>
+      </RoomProvider>
     </div>
   );
 }
