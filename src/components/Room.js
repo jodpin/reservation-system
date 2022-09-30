@@ -1,34 +1,31 @@
-import React, { useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import RoomContext from "../context/RoomContex";
+import React from "react";
 
-const Room = ({ room, makingReservation = false }) => {
-  const { imgUrl, nombre, numPersonas, precio } = room;
-  const navigate = useNavigate();
-  const { handleRoom } = useContext(RoomContext);
-
-  const reserve = (room) => {
-    handleRoom(room);
-    navigate("/reserva", { replace: true });
-  };
+const Room = ({ room, goToReserveRoom, makingReservation = false }) => {
+  const { url, name, numberPersons, price } = room;
 
   return (
-    <article className={`room-card ${makingReservation && "reservation-room-card"}`}>
-      <div><img className="room-img" src={imgUrl} alt="imagen" /></div>
+    <article
+      className={`room-card ${makingReservation && "reservation-room-card"}`}
+    >
       <div>
-      <div className="room-name">{nombre}</div>
-      <p>{`numero maximo de personas: ${numPersonas}`}</p>
-      <div className="room-price">
-        {" "}
-        <div>{precio} COP </div> <small>precio por noche</small>
+        <img className="room-img" src={url} alt="imagen" />
       </div>
-      {!makingReservation && (
-        <div className="room-reservation" onClick={() => reserve(room)}>
-          haz tu reserva ahora
+      <div>
+        <div className="room-name">{name}</div>
+        <p>{`numero maximo de personas: ${numberPersons}`}</p>
+        <div className="room-price">
+          {" "}
+          <div>{price} COP </div> <small>precio por noche</small>
         </div>
-      )}
+        {!makingReservation && (
+          <div
+            className="room-reservation"
+            onClick={() => goToReserveRoom(room)}
+          >
+            haz tu reserva ahora
+          </div>
+        )}
       </div>
-      
     </article>
   );
 };
