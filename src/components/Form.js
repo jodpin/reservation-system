@@ -1,7 +1,7 @@
 import { useForm } from "../hooks/useForm";
 import Loader from "./Loader";
 import Message from "./Message";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -14,13 +14,10 @@ const initialForm = {
 };
 
 const validationsForm = (form, dateIn, dateOut) => {
-  // este objeto "error" es el que retorna la funcion
   let errors = {};
   let regexName = /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/;
   let regexEmail = /^(\w+[/./-]?){1,}@[a-z]+[/.]\w{2,}$/;
 
-  //el metodo trim evalua la informacion real, sin tener en cuenta espacios
-  //al principio o al final
   if (!form.name.trim()) {
     errors.name = "El nombre es necesario";
   } else if (!regexName.test(form.name.trim())) {
@@ -41,9 +38,7 @@ const validationsForm = (form, dateIn, dateOut) => {
     }
   }
 
-  // if(!errors.name && !errors.email && !errors.telephone)
-
-  if (dateIn > dateOut) {
+  if (dateIn >= dateOut && dateOut !== "") {
     errors.date = "la fecha de salida debe ser posterior a la de entrada";
     console.log(dateIn, dateOut);
   }
@@ -57,9 +52,19 @@ let styles = {
   margin: "0",
 };
 
-const Formulario = () => {
+const Formulario = ({ infoRoom }) => {
   const [dateIn, setDateIn] = useState("");
   const [dateOut, setDateOut] = useState("");
+  const [reservedDatesDB] = useState([]);
+
+  useEffect(() => {
+    infoRoom.reservedDates.forEach((el) => {
+
+      reservedDatesDB.push(new Date(el.year, el.month-1, el.day));
+  
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const {
     form,
@@ -69,11 +74,8 @@ const Formulario = () => {
     handleChange,
     handleBlur,
     handleSubmit,
-    error,
-    reservedDates,
-  } = useForm(initialForm, validationsForm, dateIn, dateOut);
-
-  const arregloFechas = [];
+    setResponse,
+  } = useForm(initialForm, validationsForm, dateIn, dateOut, infoRoom);
 
   return (
     <div className="reservation-form-container">
@@ -114,7 +116,9 @@ const Formulario = () => {
               placeholderText="click aqui"
               selected={dateIn}
               onChange={(date) => setDateIn(date)}
-              excludeDates={reservedDates}
+              minDate={new Date()}
+              maxDate={new Date(2022, 11, 30)}
+              excludeDates={reservedDatesDB}
               required
             />
             <label> Fecha de ingreso</label>
@@ -125,7 +129,9 @@ const Formulario = () => {
               placeholderText="click aqui"
               selected={dateOut}
               onChange={(date) => setDateOut(date)}
-              excludeDates={reservedDates}
+              minDate={new Date()}
+              maxDate={new Date(2022, 11, 31)}
+              excludeDates={reservedDatesDB}
               required
             />
             <label> Fecha de Salida</label>
@@ -140,16 +146,7 @@ const Formulario = () => {
       </form>
 
       {loading && <Loader />}
-      {response && (
-        <Message
-          msg={
-            error
-              ? "hubo un problema con el envio de la informacion"
-              : "Los datos han sido enviados"
-          }
-          bgColor="#198754"
-        />
-      )}
+      {response && <Message setResponse={setResponse} form={form} />}
     </div>
   );
 };

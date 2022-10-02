@@ -4,79 +4,111 @@ export const useForm = (
   initialForm,
   validateForm,
   dateIn,
-  dateOut
+  dateOut,
+  infoRoom
 ) => {
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState(null);
   const [reservedDates] = useState([]);
-
+  const [userError, setUserError] = useState(null);
+  const [thereIsError, setThereIsError] = useState(false);
 
   const reserveDates = () => {
     let dayIn = dateIn.getDate();
-    let monthIn = dateIn.getMonth()+1;
-    let yearIn = dateIn.getFullYear();
-    const dateI = { dayIn, monthIn, yearIn };
+    let monthIn = dateIn.getMonth();
 
     let dayOut = dateOut.getDate();
-    let monthOut = dateOut.getMonth()+1;
+    let monthOut = dateOut.getMonth();
     let yearOut = dateOut.getFullYear();
-    const dateO = { dayOut, monthOut, yearOut };
 
-    console.log(dateI);
-    console.log(dateO);
+    if (monthOut === monthIn) {
+      for (let i = dayIn; i < dayOut; i++) {
+        reservedDates.push({ day: i, month: monthOut + 1, year: yearOut });
+      }
+    }
 
-    for (let i = dayOut; i >= -1; i--) {
-      console.log(new Date(yearOut, monthOut, i));
-      reservedDates.push(new Date(yearOut, monthOut - 1, i));
+    if (monthOut > monthIn) {
+      let newDay = undefined;
+      for (let i = monthOut; i >= monthIn; i--) {
+        if (i === monthOut) {
+          for (let j = dayOut - 1; j >= 1; j--) {
+            if (j === 1) {
+              let newDate = new Date(yearOut, i, 0);
+              newDay = newDate.getDate();
+            }
+            reservedDates.push({ day: j, month: i + 1, year: yearOut });
+          }
+        }
+
+        if (i !== monthOut && i !== monthIn) {
+          for (let j = newDay; j >= 1; j--) {
+            if (j === 1) {
+              let newDate = new Date(yearOut, i, 0);
+              newDay = newDate.getDate();
+            }
+            reservedDates.push({ day: j, month: i + 1, year: yearOut });
+          }
+        }
+
+        if (i === monthIn) {
+          for (let j = newDay; j >= dayIn; j--) {
+            reservedDates.push({ day: j, month: i + 1, year: yearOut });
+          }
+        }
+      }
     }
   };
 
   const handleChange = (e) => {
-    //destructuramos cada campo donde este el target, y asignamos los names a los key y value a
-    //los valores
     const { name, value } = e.target;
 
     setForm({ ...form, [name]: value });
   };
 
   const handleBlur = (e) => {
-    // handleChange(e);
-    // la funcion validateForm nos retorna errores, por tanto seteamos esos errores a setErrors()
     setErrors(validateForm(form, dateIn, dateOut));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    reserveDates();
     setErrors(validateForm(form, dateIn, dateOut));
-    // handleBlur();
+    if (dateIn >= dateOut && dateOut !== "") {
+      setUserError({
+        error: "la fecha de ingreso debe ser posterior a la de entrada",
+      });
+      setThereIsError(true);
+      return;
+    }
+    reserveDates();
+    infoRoom.reservedDates = [...infoRoom.reservedDates, ...reservedDates];
+    setErrors(validateForm(form, dateIn, dateOut));
     if (!form.name || dateIn === "" || dateOut === "") {
       alert("todos los campos son obligatorios");
       return;
     }
-
-    console.log(Object.keys(errors));
+    const id = infoRoom._id;
+    delete infoRoom._id;
+    form.room = infoRoom.name;
+    form.dateIn = dateIn;
+    form.dateOut = dateOut;
+    const data = JSON.stringify(infoRoom);
     if (Object.keys(errors).length === 0) {
-      alert("Enviando Formulario");
-      setLoading(true);
-      console.log(form);
-      // await fetch("https://formsubmit.co/ajax/johan.dpl_16@hotmail.com", {
-      //     method:"POST",
-      //     body: form,
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       Accept: "application/json",
-      //     },
-      //   })
-      //   .then((res) => {
-      // console.log(res);
-      setLoading(false);
       setResponse(true);
-      setForm(initialForm);
-      setTimeout(() => setResponse(false), 5000);
-      //   });
+      setLoading(true);
+
+      await fetch(`https://reservation-room.herokuapp.com/${id}`, {
+        method: "PUT",
+        body: data,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }).then((res) => {
+        setLoading(false);
+        setResponse(true);
+      });
     } else {
       return;
     }
@@ -90,7 +122,9 @@ export const useForm = (
     handleBlur,
     handleSubmit,
     response,
-    reserveDates,
+    setResponse,
     reservedDates,
+    userError,
+    thereIsError,
   };
 };

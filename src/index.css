@@ -95,19 +95,35 @@ p {
 
 /* estilos del proyecto */
 
-.back-icon{
+.back-icon {
   height: 50px;
   width: 50px;
   color: var(--third-color);
 }
 
-.reservation-form{
+.loader-container {
+  background-color: var(--white-alpha-color);
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
   display: flex;
-  flex-direction: column;
-  padding: 1rem;
+  justify-content: center;
+  align-items: center;
 }
 
-.reservation-form input{
+.loader-container * {
+  color: var(--third-color);
+}
+
+.reservation-form {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem;
+}
+
+.reservation-form input {
   padding: 1rem;
   font-family: inherit;
   font-size: 16px;
@@ -116,13 +132,13 @@ p {
   border-radius: 5px;
 }
 
-.reservation-form-dates{
+.reservation-form-dates {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.reservation-form-container{
+.reservation-form-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -131,29 +147,29 @@ p {
   height: 100%;
 }
 
-.reservation-form-submit{
+.reservation-form-submit {
   width: 230px;
   background-color: var(--third-color);
   color: var(--white-color);
   font-weight: bold;
 }
 
-.reservation-form-title{
+.reservation-form-title {
   text-align: center;
   margin-top: 20px;
 }
 
-.reservation-room{
+.reservation-room {
   padding-top: 2rem;
   display: grid;
-  grid-template-rows: 2(1fr);
+  grid-template-rows: 2 (1fr);
   align-items: center;
   min-height: 100vh;
   width: 100%;
   position: absolute;
 }
 
-.reservation-room-card{
+.reservation-room-card {
   display: grid !important;
   grid-template-columns: 300px auto !important;
   grid-gap: 1rem;
@@ -162,14 +178,14 @@ p {
   align-items: center;
 }
 
-.reservation-room-card img{
-  min-height: 100%  !important;
+.reservation-room-card img {
+  min-height: 100% !important;
   width: auto;
   margin-top: 4px;
   margin-left: 3px;
 }
 
-.reservation-room-back{
+.reservation-room-back {
   position: absolute;
   top: 15%;
   left: 10%;
@@ -177,21 +193,81 @@ p {
   flex-direction: column;
 }
 
-.room-card{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 5px;
-    margin: 0 auto;
-    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.3);
+.reservation-room-error {
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
 }
 
-.room-img{
+.response-container {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  display: flex;
+  top: 0;
+  left: 0;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--black-alpha-color);
+}
+
+.response-message {
+  background-color: var(--white-color);
+  min-height: 450px;
+  width: 500px;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.response-message .close{
+  position: absolute;
+  height: 40px;
+  width: 40px;
+  color: var(--third-color);
+  top: 10px;
+  right: 10px;
+}
+
+.response-message *{
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.response-message h3, h2{
+ text-align:center ;
+ margin-bottom: 2rem;
+}
+
+.response-message-key{
+  font-weight: bold;
+}
+
+td{
+  padding: 0.5rem;
+}
+
+
+.room-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  margin: 0 auto;
+  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.3);
+}
+
+.room-img {
   border-radius: 5px;
 }
 
-.rooms-list-container{
+.rooms-list-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 3rem;
@@ -199,7 +275,7 @@ p {
   margin: 3rem 0;
 }
 
-.room-name{
+.room-name {
   font-size: 20px;
   margin-top: 10px;
   font-weight: 600;
@@ -207,7 +283,7 @@ p {
   text-align: center;
 }
 
-.room-price{
+.room-price {
   background-color: var(--gray-dark-color);
   padding: 0.7rem;
   width: 230px;
@@ -218,7 +294,7 @@ p {
   margin-bottom: 1rem;
 }
 
-.room-reservation{
+.room-reservation {
   background-color: var(--third-color);
   padding: 0.7rem;
   width: 230px;

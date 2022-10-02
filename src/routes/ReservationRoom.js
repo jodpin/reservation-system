@@ -9,26 +9,38 @@ import { useNavigate } from "react-router-dom";
 const ReservationRoom = () => {
   const { room } = useContext(RoomContext);
 
+  const roomKeys = Object.keys(room).length;
   const [infoRoom, setInfoRoom] = useState(
-    JSON.parse(window.localStorage.getItem("room"))
+    roomKeys === 0 ? JSON.parse(window.localStorage.getItem("room")) : room
   );
 
   const navigate = useNavigate();
 
   useEffect(() => {
+  
     if (Object.keys(room).length>0) {
-      setStorageValue(room);
+      getData(`https://reservation-room.herokuapp.com/${infoRoom._id}`)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function setStorageValue(value) {
+  async function getData(url) {
     try {
-      setInfoRoom(value);
-      window.localStorage.setItem("room", JSON.stringify(value));
+      const response = await fetch(url);
+      const json = await response.json();
+      setInfoRoom(json);
+      setStorageValue(json);
     } catch (error) {
       console.error(error);
     }
   }
+
+  const setStorageValue = value =>{
+    try{
+      window.localStorage.setItem("room", JSON.stringify(value));
+    }catch(error){
+      console.error(error);
+    }}
 
   return (
     <div className="reservation-room">
@@ -40,8 +52,8 @@ const ReservationRoom = () => {
         <span>Ir atras</span>
       </div>
 
-      <Room room={infoRoom} makingReservation={true}></Room>
-      <Form></Form>
+      <Room room={infoRoom} makingReservation={true} ></Room>
+      <Form infoRoom={infoRoom}></Form>
     </div>
   );
 };
